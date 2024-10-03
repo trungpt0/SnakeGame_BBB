@@ -1,8 +1,8 @@
 /*
- * Main.c
+ * main.c
  *
  *  Created on  : 2024
- *  Authors      : Trung Tran, Thang Nguyen
+ *  Authors      : Trung Tran
  *  Description : SnakeGame
  */
 
@@ -14,6 +14,7 @@
 
 #include "I2C.h"
 #include "SSD1306_OLED.h"
+#include "effection.h"
 
 #define SNAKE_MAX_LENGTH 100
 #define SNAKE_PIXEL_SIZE 4
@@ -33,6 +34,7 @@ xy snake[SNAKE_MAX_LENGTH];
 int snake_length;
 xy food;
 int direction;
+int score = 0;
 
 
 void gpio_export(const char *gpio)
@@ -105,13 +107,14 @@ void move_snake()
     if (gpio_read(BUTTON_3) == 0) direction = 2;
     if (gpio_read(BUTTON_4) == 0) direction = 3;
 
-    if (direction == 0) snake[0].y -= SNAKE_PIXEL_SIZE;
-    if (direction == 1) snake[0].x += SNAKE_PIXEL_SIZE;
-    if (direction == 2) snake[0].y += SNAKE_PIXEL_SIZE;
-    if (direction == 3) snake[0].x -= SNAKE_PIXEL_SIZE;
+    if (direction == 0) snake[0].y -= SNAKE_PIXEL_SIZE; // Move up
+    if (direction == 1) snake[0].x += SNAKE_PIXEL_SIZE; // Move right
+    if (direction == 2) snake[0].y += SNAKE_PIXEL_SIZE; // Move down
+    if (direction == 3) snake[0].x -= SNAKE_PIXEL_SIZE; // Move left
 
     if (snake[0].x == food.x && snake[0].y == food.y) {
         snake_length++;
+        score++;
         generate_food();
     }
 }
@@ -146,6 +149,12 @@ void update_game()
     clearDisplay();
     move_snake();
     if (check_collision()) {
+        end_snake_game();
+        print_str("score: ");
+        printNumber_I(score, DEC);
+        Display();
+        usleep(3000000);
+        clearDisplay();
         printf("Game Over!\n");
         exit(0);
     }
@@ -174,6 +183,12 @@ int main()
 
     display_Init_seq();
     clearDisplay();
+
+    start_snake_game();
+    Display();
+    usleep(3000000);
+    clearDisplay();
+
     snake_init();
 
     while (1) {
