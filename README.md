@@ -38,10 +38,12 @@ make
 ## Hardware Connection Diagram
 ### BeagleBone Black to SSD1306 OLED by i2c-2
 |SSD1306|BBB|
+|----------|----------|
 |SDA|GPIO12|
 |SCL|GPIO13|
 ### BeagleBone Black to buttons
 |Button|BBB|
+|----------|----------|
 |Up button|GPIO30|
 |Down button|GPIO48|
 |Left button|GPIO60|
@@ -50,5 +52,5 @@ make
 ## Contact
 trungtrnminh368@gmail.com
 ## License
-GPL
-SSD1306 and I2C lib (MIT)
+- GPL
+- SSD1306 and I2C lib (MIT)
