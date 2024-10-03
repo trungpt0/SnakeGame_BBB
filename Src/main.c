@@ -19,10 +19,10 @@
 #define SNAKE_MAX_LENGTH 100
 #define SNAKE_PIXEL_SIZE 4
 
-#define BUTTON_1 "30"
-#define BUTTON_2 "31"
-#define BUTTON_3 "48"
-#define BUTTON_4 "60"
+#define BUTTON_1 "30" // BTN UP
+#define BUTTON_2 "31" // BTN RIGHT
+#define BUTTON_3 "48" // BTN DOWN
+#define BUTTON_4 "60" // BTN LEFT
 
 typedef struct
 {
@@ -36,7 +36,7 @@ xy food;
 int direction;
 int score = 0;
 
-
+/* Export GPIO */
 void gpio_export(const char *gpio)
 {
     int fd = open("/sys/class/gpio/export", O_WRONLY);
@@ -48,6 +48,7 @@ void gpio_export(const char *gpio)
     close(fd);
 }
 
+/* Config input for buttons */
 void gpio_direction(const char *gpio, const char *direction)
 {
     char path[35];
@@ -61,6 +62,7 @@ void gpio_direction(const char *gpio, const char *direction)
     close(fd);
 }
 
+/* Read data from buttons */
 int gpio_read(const char *gpio)
 {
     char path[30];
@@ -76,6 +78,7 @@ int gpio_read(const char *gpio)
     return (value == '0') ? 0 : 1;
 }
 
+/* Generate food in random postion */
 void generate_food()
 {
     srand(time(NULL));
@@ -83,6 +86,7 @@ void generate_food()
     food.y = (rand() % (SSD1306_LCDHEIGHT/SNAKE_PIXEL_SIZE)) * SNAKE_PIXEL_SIZE;
 }
 
+/* Config length snake */
 void snake_init()
 {
     snake_length = 3;
@@ -96,6 +100,7 @@ void snake_init()
     generate_food();
 }
 
+/* Move snake while button is pressing */
 void move_snake()
 {
     for (int i = snake_length - 1; i > 0; i--) {
@@ -119,6 +124,7 @@ void move_snake()
     }
 }
 
+/* Check collision snake */
 int check_collision()
 {
     if (snake[0].x < 0 || snake[0].x >= SSD1306_LCDWIDTH || snake[0].y < 0 || snake[0].y >= SSD1306_LCDHEIGHT) {
@@ -132,6 +138,7 @@ int check_collision()
     return 0;
 }
 
+/* Display Snake */
 void drawSnake()
 {
     for (int i = 0; i < snake_length; i++) {
@@ -139,22 +146,27 @@ void drawSnake()
     }
 }
 
+/* Display Food */
 void drawFood()
 {
     fillRect(food.x, food.y, SNAKE_PIXEL_SIZE, SNAKE_PIXEL_SIZE, WHITE);
 }
 
+/* Run game */
 void update_game()
 {
     clearDisplay();
     move_snake();
     if (check_collision()) {
+        
+        // Display score and game over
         end_snake_game();
         print_str("score: ");
         printNumber_I(score, DEC);
         Display();
         usleep(3000000);
         clearDisplay();
+
         printf("Game Over!\n");
         exit(0);
     }
@@ -170,20 +182,24 @@ int main()
     // gpio_export(BUTTON_3);
     // gpio_export(BUTTON_4);
 
+    // set direction
     gpio_direction(BUTTON_1, "in");
     gpio_direction(BUTTON_2, "in");
     gpio_direction(BUTTON_3, "in");
     gpio_direction(BUTTON_4, "in");
 
+    // init i2c
     if (init_i2c_dev(I2C_DEV2_PATH, SSD1306_OLED_ADDR) == 0) {
         printf("connected to ssd1306\r\n");
     } else {
         printf("connect to ssd1306 failed\r\n");
     }
 
+    // setup oled
     display_Init_seq();
     clearDisplay();
 
+    // start game
     start_snake_game();
     Display();
     usleep(3000000);
