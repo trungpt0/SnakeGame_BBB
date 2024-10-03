@@ -25,7 +25,7 @@ cd SnakeGame_BBB
 ```
 2. SSH to BeagleBone Black
 3. Connect the hardware
-4. Comiple
+4. Compile
 ```bash
 make
 ./main
@@ -49,6 +49,7 @@ make
 |Left button|GPIO60|
 |Right button|GPIO31|
 ## Demo
+![Snake Game](/home/esacev/SnakeGame/SnakeGame_BBB/Demo/IMG_1386.JPG)
 ## Contact
 trungtrnminh368@gmail.com
 ## License
